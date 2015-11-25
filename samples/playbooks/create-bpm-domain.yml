@@ -1,0 +1,24 @@
+---
+- name: Create BPM Suite 12c Domain (Compact)
+  hosts: default
+  remote_user: vagrant
+  vars:
+    domain_name: bpm_domain
+    domains_home: /home/oraclefmw/config/domains
+    apps_home: /home/oraclefmw/config/apps
+    admin_username: weblogic
+    admin_password: welcome1
+    mw_home: /home/oraclefmw/product/Oracle_Home
+    domain_script_file: /home/oraclefmw/domain.py
+  tasks:
+    - name: Generate Domain Creation WLST Script
+      template: src=templates/domain.py.j2 dest={{ domain_script_file }}
+      become: yes
+      become_user: oraclefmw
+    - name: Run WLST Script
+      command: "{{ mw_home }}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning {{ domain_script_file }} > domain.log"
+      become: yes
+      become_user: oraclefmw
+      args:
+        chdir: /home/oraclefmw/
+        creates: "{{ domains_home }}/{{ domain_name }}/config/config.xml"

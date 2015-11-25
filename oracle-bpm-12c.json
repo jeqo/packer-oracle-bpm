@@ -57,6 +57,26 @@
 
   {
     "type": "shell",
+    "only": ["virtualbox-ovf"],
+    "inline": [
+      "wget -O/etc/pki/tls/certs/ca-bundle.crt http://curl.haxx.se/ca/cacert.pem",
+      "groupadd vagrant -g 999",
+      "useradd vagrant -g vagrant -G wheel -u 900",
+      "echo \"vagrant\" | passwd --stdin vagrant",
+      "echo \"vagrant        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers",
+      "sed -i \"s/^.*requiretty/#Defaults requiretty/\" /etc/sudoers"
+    ]
+  },{
+    "type": "shell",
+    "only": ["docker"],
+    "scripts": [
+      "scripts/common/sshd.sh",
+      "scripts/common/vagrant.sh"
+    ]
+  },
+
+  {
+    "type": "shell",
     "scripts": [
       "scripts/oracle-java/install-jdk-rpm.sh"
     ],
@@ -145,7 +165,17 @@
       "type": "docker-tag",
       "only": ["docker"],
       "repository": "{{user `user`}}/oracle-bpm-12c",
-      "tag": "{{user `version`}}",
+      "tag": "{{user `version`}}"
+    }, {
+      "type": "docker-push",
+      "only": ["docker"]
+    }],
+
+    [{
+      "type": "docker-tag",
+      "only": ["docker"],
+      "repository": "{{user `user`}}/oracle-bpm-12c",
+      "tag": "latest",
       "force": true
     }, {
       "type": "docker-push",

@@ -1,0 +1,36 @@
+DOMAIN_NAME='{{ domain_name }}'
+DOMAIN_MODE='Compact'
+
+DOMAIN_PATH='{{ domains_home }}/' + DOMAIN_NAME
+APP_PATH='{{ apps_home }}/' + DOMAIN_NAME
+
+START_MODE='dev'
+
+ADMIN_USERNAME='{{ admin_username }}'
+ADMIN_PASSWORD='{{ admin_password }}'
+
+print 'Creating Base Domain'
+
+readTemplate('{{ mw_home }}/wlserver/common/templates/wls/wls.jar', DOMAIN_MODE)
+
+setOption('ServerStartMode', 'dev')
+setOption('AppDir', APP_PATH)
+
+cd('/Security/base_domain/User/weblogic')
+set('Name', ADMIN_USERNAME)
+cmo.setPassword(ADMIN_PASSWORD)
+
+writeDomain(DOMAIN_PATH)
+closeTemplate()
+
+print 'Aplying Templates'
+
+readDomain(DOMAIN_PATH)
+
+addTemplate('{{ mw_home }}/soa/common/templates/wls/oracle.bpm_template.jar')
+
+updateDomain()
+closeDomain()
+
+print 'Domain Created'
+exit()

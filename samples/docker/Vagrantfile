@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+  config.vm.network "forwarded_port", guest: 22, host: 2220
+  config.vm.network "forwarded_port", guest: 7001, host: 7001
+  config.vm.network "forwarded_port", guest: 5004, host: 5004
+
+  config.vm.provider "docker" do |d|
+    d.image = "jeqo/oracle-bpm-12c:12.2.1.20151124140119"
+    d.has_ssh = true
+    d.remains_running = true
+    d.ports = ["22:2233", "7101:7001", "5104:5004"]
+  end
+
+  config.ssh.username = "root"
+  config.ssh.port = 2233
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../playbooks/create-bpm-domain.yml"
+  end
+end
