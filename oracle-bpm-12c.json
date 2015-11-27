@@ -3,6 +3,7 @@
     "base_vm_name": "oracle-linux-6",
     "vm_name": "oracle-bpm_qs-12c",
     "version": "12.2.1.{{isotime \"20060102150405\"}}",
+    "user_home": "{{env `HOME`}}",
 
     "jdk_version": "8u66",
     "jdk_build": "b17",
@@ -34,8 +35,8 @@
   {
     "type": "virtualbox-ovf",
     "vm_name": "{{user `vm_name`}}",
-    "output_directory": "build/{{user `vm_name`}}",
-    "source_path": "build/{{user `base_vm_name`}}/{{user `base_vm_name`}}.ovf",
+    "output_directory": "{{user `user_home`}}/boxes/{{user `vm_name`}}",
+    "source_path": "{{user `user_home`}}/boxes/{{user `base_vm_name`}}/{{user `base_vm_name`}}.ovf",
 
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
@@ -53,26 +54,6 @@
     "only": ["virtualbox-ovf"],
     "inline": "mkdir /data && chown -R 777 /data",
     "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'"
-  },
-
-  {
-    "type": "shell",
-    "only": ["virtualbox-ovf"],
-    "inline": [
-      "wget -O/etc/pki/tls/certs/ca-bundle.crt http://curl.haxx.se/ca/cacert.pem",
-      "groupadd vagrant -g 999",
-      "useradd vagrant -g vagrant -G wheel -u 900",
-      "echo \"vagrant\" | passwd --stdin vagrant",
-      "echo \"vagrant        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers",
-      "sed -i \"s/^.*requiretty/#Defaults requiretty/\" /etc/sudoers"
-    ]
-  },{
-    "type": "shell",
-    "only": ["docker"],
-    "scripts": [
-      "scripts/common/sshd.sh",
-      "scripts/common/vagrant.sh"
-    ]
   },
 
   {
