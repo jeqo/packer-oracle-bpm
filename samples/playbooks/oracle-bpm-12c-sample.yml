@@ -1,0 +1,12 @@
+---
+- name: Oracle BPM 12c - Sample Domain
+  hosts: default
+  remote_user: vagrant
+  sudo: yes
+
+  vars_files:
+    - defaults/create-bpm-domain-schemas.yml
+    - defaults/create-bpm-domain.yml
+  tasks:
+    - include: tasks/create-bpm-domain-schemas.yml
+    - include: tasks/create-bpm-domain.yml

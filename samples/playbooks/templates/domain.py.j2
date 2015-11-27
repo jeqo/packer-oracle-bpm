@@ -9,6 +9,19 @@ START_MODE='dev'
 ADMIN_USERNAME='{{ admin_username }}'
 ADMIN_PASSWORD='{{ admin_password }}'
 
+REPOS_DBURL='jdbc:oracle:thin:{{ db_hostname }}:{{ db_port }}:{{ db_oracle_sid }}'
+REPOS_DBUSER_PREFIX='{{ db_schema_prefix }}'
+REPOS_DBPASSWORD='{{ db_schema_password }}'
+
+def alterDatasource(datasource_name, schema_sufix, driver_name):
+	cd('/JDBCSystemResource/' + datasource_name + '/JdbcResource/' + datasource_name + '/JDBCDriverParams/NO_NAME_0')
+	set('URL',REPOS_DBURL)
+	set('PasswordEncrypted',REPOS_DBPASSWORD)
+	if driver_name:
+		set('DriverName', driver_name)
+	cd('Properties/NO_NAME_0/Property/user')
+	set('Value',REPOS_DBUSER_PREFIX+'_'+schema_sufix)
+
 print 'Creating Base Domain'
 
 readTemplate('{{ mw_home }}/wlserver/common/templates/wls/wls.jar', DOMAIN_MODE)
@@ -20,6 +33,21 @@ cd('/Security/base_domain/User/weblogic')
 set('Name', ADMIN_USERNAME)
 cmo.setPassword(ADMIN_PASSWORD)
 
+MACHINE_NAME = 'bpm-machine-01'
+NM_ADDRESS = 'localhost'
+NM_PORT = 5556
+NM_TYPE = 'SSL'
+
+cd('/')
+create(MACHINE_NAME, 'Machine')
+
+cd('Machine/' + MACHINE_NAME)
+create(MACHINE_NAME, 'NodeManager')
+cd('NodeManager/' + MACHINE_NAME)
+set('ListenAddress',NM_ADDRESS)
+set('ListenPort',NM_PORT)
+set('NMType',NM_TYPE)
+
 writeDomain(DOMAIN_PATH)
 closeTemplate()
 
@@ -28,6 +56,23 @@ print 'Aplying Templates'
 readDomain(DOMAIN_PATH)
 
 addTemplate('{{ mw_home }}/soa/common/templates/wls/oracle.bpm_template.jar')
+
+print 'Creating Resources'
+
+#cd('/Servers/soa_server1')
+#set('Machine', MACHINE_NAME)
+
+alterDatasource('opss-audit-DBDS', 'IAU_APPEND', None)
+alterDatasource('opss-audit-viewDS', 'IAU_VIEWER', None)
+alterDatasource('opss-data-source', 'OPSS', None)
+alterDatasource('LocalSvcTblDataSource', 'STB', None)
+alterDatasource('EDNDataSource', 'SOAINFRA', None)
+alterDatasource('EDNLocalTxDataSource', 'SOAINFRA', None)
+alterDatasource('OraSDPMDataSource', 'UMS', None)
+alterDatasource('mds-soa', 'MDS', None)
+alterDatasource('mds-owsm', 'MDS', None)
+alterDatasource('SOADataSource', 'SOAINFRA', None)
+alterDatasource('SOALocalTxDataSource', 'SOAINFRA', None)
 
 updateDomain()
 closeDomain()

@@ -1,0 +1,9 @@
+---
+  fmw_user: oraclefmw
+  domain_name: bpm_domain
+  domains_home: /home/{{ fmw_user }}/config/domains
+  apps_home: /home/{{ fmw_user }}/config/apps
+  admin_username: weblogic
+  admin_password: welcome1
+  mw_home: /home/{{ fmw_user }}/product/Oracle_Home
+  domain_script_file: /home/{{ fmw_user }}/domain.py

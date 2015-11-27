@@ -1,0 +1,16 @@
+---
+  - name: Generate Domain Creation WLST Script
+    template: src=templates/domain.py.j2 dest={{ domain_script_file }}
+    become: yes
+    become_user: "{{ fmw_user }}"
+  - name: Run WLST Script
+    command: "{{ mw_home }}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning {{ domain_script_file }} > domain.log"
+    become: yes
+    become_user: "{{ fmw_user }}"
+    args:
+      chdir: /home/{{ fmw_user }}/
+      creates: "{{ domains_home }}/{{ domain_name }}/config/config.xml"
+  - name: Generate Start Server Upstart Script
+    template: src=templates/wlsadminserver.conf.j2 dest=/etc/init/wlsadminserver.conf
+  - name: Enable Service
+    service: name=wlsadminserver enabled=yes
