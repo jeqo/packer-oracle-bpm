@@ -7,5 +7,5 @@
     ignore_errors: yes
     become: yes
     become_user: "{{ fmw_user }}"
-  #- name: remove previous configuration
-  #  file: path={{ rcu_password_file }} state=absent
+  - name: remove previous configuration
+    file: path={{ rcu_password_file }} state=absent
