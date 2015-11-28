@@ -1,7 +1,7 @@
 {
   "variables": {
     "base_vm_name": "oracle-linux-6",
-    "vm_name": "oracle-bpm_qs-12c",
+    "vm_name": "oracle-bpmqs-12c",
     "version": "12.2.1.{{isotime \"20060102150405\"}}",
     "user_home": "{{env `HOME`}}",
 
@@ -145,7 +145,7 @@
     [{
       "type": "docker-tag",
       "only": ["docker"],
-      "repository": "{{user `user`}}/oracle-bpm-12c",
+      "repository": "{{user `user`}}/{{user `vm_name`}}",
       "tag": "{{user `version`}}"
     }, {
       "type": "docker-push",
@@ -155,7 +155,7 @@
     [{
       "type": "docker-tag",
       "only": ["docker"],
-      "repository": "{{user `user`}}/oracle-bpm-12c",
+      "repository": "{{user `user`}}/{{user `vm_name`}}",
       "tag": "latest",
       "force": true
     }, {
@@ -173,7 +173,7 @@
       "type": "atlas",
       "only": ["virtualbox-ovf"],
       "token": "{{user `atlas_token`}}",
-      "artifact": "{{user `user`}}/oracle-bpm-12c",
+      "artifact": "{{user `user`}}/{{user `vm_name`}}",
       "artifact_type": "vagrant.box",
       "metadata": {
         "created_at": "{{timestamp}}",
